@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "aiolifx"
+version = "0.1.0"
+description = ""
+authors = ["alogan <adamlogan73@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^2"
+pydantic-extra-types = "^2.9.0"
+bitstring = "^4.2.3"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1"
+pre-commit = "^3"
+ruff = "^0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 200
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D"
+]
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
+
