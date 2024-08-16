@@ -1,13 +1,16 @@
 import struct
+from typing import TYPE_CHECKING
 from typing import ClassVar
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel
+from pydantic import computed_field
 from pydantic_extra_types.mac_address import MacAddress
 
-from aiolifx.resources.const import BROADCAST_MAC, HEADER_SIZE_BYTES
-from aiolifx.resources.message_types import MessageType
+from aiolifx.resources.const import BROADCAST_MAC
+from aiolifx.resources.const import HEADER_SIZE_BYTES
 
-# reverses bytes for little endian, then converts to int
+if TYPE_CHECKING:
+    from aiolifx.models.message_types import MessageType
 
 
 def little_endian(bs):
@@ -15,9 +18,9 @@ def little_endian(bs):
 
 
 class Message(BaseModel):
-    message_type: MessageType
-    # Frame
+    message_type: "MessageType"
 
+    # Frame
     size_struct: ClassVar[struct.Struct] = struct.Struct("<H")
     flags_struct: ClassVar[struct.Struct] = struct.Struct("<H")
     source_id_struct: ClassVar[struct.Struct] = struct.Struct("<L")
@@ -86,14 +89,24 @@ class Message(BaseModel):
 
     def get_frame(self) -> bytes:
         size = self.size_struct.pack(self.size)
-        flags = self.flags_struct.pack(((self.origin & 0b11) << 14) | ((self.tagged & 0b1) << 13) | ((self.addressable & 0b1) << 12) | (self.protocol & 0b111111111111))
+        flags = self.flags_struct.pack(
+            ((self.origin & 0b11) << 14)
+            | ((self.tagged & 0b1) << 13)
+            | ((self.addressable & 0b1) << 12)
+            | (self.protocol & 0b111111111111)
+        )
         source_id = self.source_id_struct.pack(self.source_id)
         return size + flags + source_id
 
     def get_frame_addr(self) -> bytes:
+        # reverses bytes for little endian, then converts to int
         mac_addr = self.mac_addr_struct.pack(self.target_address_int())
         reserved_48 = self.reserved_48_struct.pack(*([self.reserved] * 6))
-        response_flags = self.response_flags_struct.pack(((self.reserved & 0b111111) << 2) | ((self.ack_requested & 0b1) << 1) | (self.response_requested & 0b1))
+        response_flags = self.response_flags_struct.pack(
+            ((self.reserved & 0b111111) << 2)
+            | ((self.ack_requested & 0b1) << 1)
+            | (self.response_requested & 0b1)
+        )
         seq_num = self.seq_num_struct.pack(self.seq_num)
         return mac_addr + reserved_48 + response_flags + seq_num
 

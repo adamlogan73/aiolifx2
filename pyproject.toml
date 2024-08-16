@@ -1,37 +1,64 @@
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
+[tool.bandit]
+exclude = ["B311"]
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+follow_imports = "normal"
+python_version = 3.10
+strict_equality = true
+warn_incomplete_stub = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
 [tool.poetry]
-name = "aiolifx"
-version = "0.1.0"
-description = ""
 authors = ["alogan <adamlogan73@gmail.com>"]
+description = ""
 license = "MIT"
+name = "aiolifx"
 readme = "README.md"
+version = "0.1.0"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+bitstring = "^4"
 pydantic = "^2"
-pydantic-extra-types = "^2.9.0"
-bitstring = "^4.2.3"
-
+pydantic-extra-types = "^2"
+python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1"
 pre-commit = "^3"
+pytest = "^8"
 ruff = "^0"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.ruff]
-line-length = 200
+line-length = 90
 target-version = "py310"
-
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-    "D"
-]
 
 [tool.ruff.format]
 skip-magic-trailing-comma = true
 
+[tool.ruff.lint]
+ignore = [
+  "D",
+]
+select = ["ALL"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  'E501',
+]

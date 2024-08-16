@@ -1,11 +1,13 @@
 from enum import Enum
-from random import random
+from enum import IntEnum
+from random import randrange
 from typing import Any
 
 import bitstring
 from pydantic import BaseModel
 
-from aiolifx.resources.message import Message, little_endian
+from aiolifx.models.message import Message
+from aiolifx.models.message import little_endian
 
 
 def uint8_format(d: int) -> bytes:
@@ -44,7 +46,7 @@ def uint64_format(d: int) -> bytes:
     return little_endian(bitstring.pack("uint:64", d))
 
 
-class MessageType(Enum, int):
+class MessageType(IntEnum):
     GetService = 2
     StateService = 3
     GetHostInfo = 12
@@ -187,7 +189,7 @@ class ButtonTargetDeviceRelays:
 
 
 class GetService(Message):
-    message_type = MessageType.GetService
+    message_type: MessageType = MessageType.GetService
 
 
 class StateServicePayload(BaseModel):
@@ -196,7 +198,7 @@ class StateServicePayload(BaseModel):
 
 
 class StateService(Message):
-    message_type = MessageType.StateService
+    message_type: MessageType = MessageType.StateService
     payload: StateServicePayload
 
     def get_payload(self) -> bytes:
@@ -206,7 +208,7 @@ class StateService(Message):
 
 
 class GetHostInfo(Message):
-    message_type = MessageType.GetHostInfo
+    message_type: MessageType = MessageType.GetHostInfo
 
 
 class StateHostInfoPayload(BaseModel):
@@ -217,7 +219,7 @@ class StateHostInfoPayload(BaseModel):
 
 
 class StateHostInfo(Message):
-    message_type = MessageType.StateHostInfo
+    message_type: MessageType = MessageType.StateHostInfo
     payload: StateHostInfoPayload
 
     def get_payload(self) -> bytes:
@@ -229,7 +231,7 @@ class StateHostInfo(Message):
 
 
 class GetHostFirmware(Message):
-    message_type = MessageType.GetHostFirmware
+    message_type: MessageType = MessageType.GetHostFirmware
 
 
 class StateHostFirmwarePayload(BaseModel):
@@ -239,7 +241,7 @@ class StateHostFirmwarePayload(BaseModel):
 
 
 class StateHostFirmware(Message):
-    message_type = MessageType.StateHostFirmware
+    message_type: MessageType = MessageType.StateHostFirmware
     payload: StateHostFirmwarePayload
 
     def get_payload(self) -> bytes:
@@ -250,7 +252,7 @@ class StateHostFirmware(Message):
 
 
 class GetWifiInfo(Message):
-    message_type = MessageType.GetWifiInfo
+    message_type: MessageType = MessageType.GetWifiInfo
 
 
 class StateWifiInfoPayload(BaseModel):
@@ -261,7 +263,7 @@ class StateWifiInfoPayload(BaseModel):
 
 
 class StateWifiInfo(Message):
-    message_type = MessageType.StateWifiInfo
+    message_type: MessageType = MessageType.StateWifiInfo
     payload: StateWifiInfoPayload
 
     def get_payload(self) -> bytes:
@@ -273,7 +275,7 @@ class StateWifiInfo(Message):
 
 
 class GetWifiFirmware(Message):
-    message_type = MessageType.GetWifiFirmware
+    message_type: MessageType = MessageType.GetWifiFirmware
 
 
 class StateWifiFirmwarePayload(BaseModel):
@@ -283,7 +285,7 @@ class StateWifiFirmwarePayload(BaseModel):
 
 
 class StateWifiFirmware(Message):
-    message_type = MessageType.StateWifiFirmware
+    message_type: MessageType = MessageType.StateWifiFirmware
     payload: StateWifiFirmwarePayload
 
     def get_payload(self) -> bytes:
@@ -294,7 +296,7 @@ class StateWifiFirmware(Message):
 
 
 class GetPower(Message):
-    message_type = MessageType.GetPower
+    message_type: MessageType = MessageType.GetPower
 
 
 class PowerPayload(BaseModel):
@@ -302,7 +304,7 @@ class PowerPayload(BaseModel):
 
 
 class SetPower(Message):
-    message_type = MessageType.SetPower
+    message_type: MessageType = MessageType.SetPower
     payload: PowerPayload
 
     def get_payload(self) -> bytes:
@@ -310,7 +312,7 @@ class SetPower(Message):
 
 
 class StatePower(Message):
-    message_type = MessageType.StatePower
+    message_type: MessageType = MessageType.StatePower
     payload: PowerPayload
 
     def get_payload(self) -> bytes:
@@ -318,7 +320,7 @@ class StatePower(Message):
 
 
 class GetLabel(Message):
-    message_type = MessageType.GetLabel
+    message_type: MessageType = MessageType.GetLabel
 
 
 class LabelPayload(BaseModel):
@@ -326,29 +328,33 @@ class LabelPayload(BaseModel):
 
 
 class SetLabel(Message):
-    message_type = MessageType.SetLabel
+    message_type: MessageType = MessageType.SetLabel
     payload: LabelPayload
 
     def get_payload(self) -> bytes:
         field_len_bytes = 32
         label = b"".join(uint8_format(ord(c)) for c in self.payload.label)
-        padding = b"".join(uint8_format(0) for i in range(field_len_bytes - len(self.payload.label)))
+        padding = b"".join(
+            uint8_format(0) for i in range(field_len_bytes - len(self.payload.label))
+        )
         return label + padding
 
 
 class StateLabel(Message):
-    message_type = MessageType.StateLabel
+    message_type: MessageType = MessageType.StateLabel
     payload: LabelPayload
 
     def get_payload(self) -> bytes:
         field_len_bytes = 32
         label = b"".join(uint8_format(c) for c in self.payload.label)
-        padding = b"".join(uint8_format(0) for i in range(field_len_bytes - len(self.payload.label)))
+        padding = b"".join(
+            uint8_format(0) for i in range(field_len_bytes - len(self.payload.label))
+        )
         return label + padding
 
 
 class GetVersion(Message):
-    message_type = MessageType.GetVersion
+    message_type: MessageType = MessageType.GetVersion
 
 
 class StateVersionPayload(BaseModel):
@@ -358,7 +364,7 @@ class StateVersionPayload(BaseModel):
 
 
 class StateVersion(Message):
-    message_type = MessageType.StateVersion
+    message_type: MessageType = MessageType.StateVersion
     payload: StateVersionPayload
 
     def get_payload(self) -> bytes:
@@ -369,7 +375,7 @@ class StateVersion(Message):
 
 
 class GetInfo(Message):
-    message_type = MessageType.GetInfo
+    message_type: MessageType = MessageType.GetInfo
 
 
 class StateInfoPayload(BaseModel):
@@ -379,7 +385,7 @@ class StateInfoPayload(BaseModel):
 
 
 class StateInfo(Message):
-    message_type = MessageType.StateInfo
+    message_type: MessageType = MessageType.StateInfo
     payload: StateInfoPayload
 
     def get_payload(self) -> bytes:
@@ -390,56 +396,60 @@ class StateInfo(Message):
 
 
 class GetLocation(Message):
-    message_type = MessageType.GetLocation
+    message_type: MessageType = MessageType.GetLocation
 
 
 class LocationPayload(BaseModel):
-    location: str
+    location: list[int]
     label: str
     updated_at: int
 
 
 class StateLocation(Message):
-    message_type = MessageType.StateLocation
+    message_type: MessageType = MessageType.StateLocation
     payload: LocationPayload
 
     def get_payload(self) -> bytes:
         location = b"".join(uint8_format(b) for b in self.payload.location)
         label = b"".join(uint8_format(c) for c in self.payload.label)
-        label_padding = b"".join(uint8_format(0) for i in range(32 - len(self.payload.label)))
+        label_padding = b"".join(
+            uint8_format(0) for i in range(32 - len(self.payload.label))
+        )
         updated_at = uint64_format(self.payload.updated_at)
         return location + label + label_padding + updated_at
 
 
 class GetGroup(Message):
-    message_type = MessageType.GetGroup
+    message_type: MessageType = MessageType.GetGroup
 
 
 class GroupPayload(BaseModel):
-    group: str
+    group: list[int]
     label: str
     updated_at: int
 
 
 class StateGroup(Message):
-    message_type = MessageType.StateGroup
+    message_type: MessageType = MessageType.StateGroup
     payload: GroupPayload
 
     def get_payload(self) -> bytes:
         group = b"".join(uint8_format(b) for b in self.payload.group)
         label = b"".join(uint8_format(c) for c in self.payload.label)
-        label_padding = b"".join(uint8_format(0) for i in range(32 - len(self.label)))
+        label_padding = b"".join(
+            uint8_format(0) for i in range(32 - len(self.payload.label))
+        )
         label += label_padding
         updated_at = uint64_format(self.payload.updated_at)
         return group + label + updated_at
 
 
 class SetReboot(Message):
-    message_type = MessageType.SetReboot
+    message_type: MessageType = MessageType.SetReboot
 
 
 class Acknowledgement(Message):
-    message_type = MessageType.Acknowledgement
+    message_type: MessageType = MessageType.Acknowledgement
 
 
 class ByteArrayPayload(BaseModel):
@@ -447,7 +457,7 @@ class ByteArrayPayload(BaseModel):
 
 
 class EchoRequest(Message):
-    message_type = MessageType.EchoRequest
+    message_type: MessageType = MessageType.EchoRequest
     payload: ByteArrayPayload
 
     def get_payload(self) -> bytes:
@@ -455,14 +465,16 @@ class EchoRequest(Message):
         byte_array = b"".join(uint8_format(b) for b in self.payload.byte_array)
         byte_array_len = len(byte_array)
         if byte_array_len < field_len:
-            byte_array += b"".join(uint8_format(0) for i in range(field_len - byte_array_len))
+            byte_array += b"".join(
+                uint8_format(0) for i in range(field_len - byte_array_len)
+            )
         elif byte_array_len > field_len:
             byte_array = byte_array[:field_len]
         return byte_array
 
 
 class EchoResponse(Message):
-    message_type = MessageType.EchoResponse
+    message_type: MessageType = MessageType.EchoResponse
     payload: ByteArrayPayload
 
     def get_payload(self) -> bytes:
@@ -473,7 +485,7 @@ class EchoResponse(Message):
 
 
 class LightGet(Message):
-    message_type = MessageType.LightGet
+    message_type: MessageType = MessageType.LightGet
 
 
 class SetColorPayload(BaseModel):
@@ -482,7 +494,7 @@ class SetColorPayload(BaseModel):
 
 
 class LightSetColor(Message):
-    message_type = MessageType.LightSetColor
+    message_type: MessageType = MessageType.LightSetColor
     payload: SetColorPayload
 
     def get_payload(self) -> bytes:
@@ -502,7 +514,7 @@ class WaveFormPayload(BaseModel):
 
 
 class LightSetWaveform(Message):
-    message_type = MessageType.LightSetWaveform
+    message_type: MessageType = MessageType.LightSetWaveform
     payload: WaveFormPayload
 
     def get_payload(self) -> bytes:
@@ -526,7 +538,7 @@ class WaveFormPayloadOptional(WaveFormPayload):
 
 
 class LightSetWaveformOptional(Message):
-    message_type = MessageType.LightSetWaveform
+    message_type: MessageType = MessageType.LightSetWaveform
     payload: WaveFormPayloadOptional
 
     def get_payload(self) -> bytes:
@@ -542,7 +554,19 @@ class LightSetWaveformOptional(Message):
         set_brightness = uint8_format(self.payload.set_brightness)
         set_kelvin = uint8_format(self.payload.set_kelvin)
 
-        return reserved_8 + transient + color + period + cycles + skew_ratio + waveform + set_hue + set_saturation + set_brightness + set_kelvin
+        return (
+            reserved_8
+            + transient
+            + color
+            + period
+            + cycles
+            + skew_ratio
+            + waveform
+            + set_hue
+            + set_saturation
+            + set_brightness
+            + set_kelvin
+        )
 
 
 class LightStatePayload(BaseModel):
@@ -554,7 +578,7 @@ class LightStatePayload(BaseModel):
 
 
 class LightState(Message):
-    message_type = MessageType.LightState
+    message_type: MessageType = MessageType.LightState
     payload: LightStatePayload
 
     def get_payload(self) -> bytes:
@@ -567,7 +591,7 @@ class LightState(Message):
 
 
 class LightGetPower(Message):
-    message_type = MessageType.LightGetPower
+    message_type: MessageType = MessageType.LightGetPower
 
 
 class SetPowerPayload(PowerPayload):
@@ -575,7 +599,7 @@ class SetPowerPayload(PowerPayload):
 
 
 class LightSetPower(Message):
-    message_type = MessageType.LightSetPower
+    message_type: MessageType = MessageType.LightSetPower
     payload: SetPowerPayload
 
     def get_payload(self) -> bytes:
@@ -585,7 +609,7 @@ class LightSetPower(Message):
 
 
 class LightStatePower(Message):
-    message_type = MessageType.LightStatePower
+    message_type: MessageType = MessageType.LightStatePower
     payload: PowerPayload
 
     def get_payload(self) -> bytes:
@@ -596,7 +620,7 @@ class LightStatePower(Message):
 
 
 class LightGetInfrared(Message):
-    message_type = MessageType.LightGetInfrared
+    message_type: MessageType = MessageType.LightGetInfrared
 
 
 class InfraredBrightnessPayload(BaseModel):
@@ -604,7 +628,7 @@ class InfraredBrightnessPayload(BaseModel):
 
 
 class LightStateInfrared(Message):
-    message_type = MessageType.LightStateInfrared
+    message_type: MessageType = MessageType.LightStateInfrared
     payload: InfraredBrightnessPayload
 
     def get_payload(self) -> bytes:
@@ -612,7 +636,7 @@ class LightStateInfrared(Message):
 
 
 class LightSetInfrared(Message):
-    message_type = MessageType.LightSetInfrared
+    message_type: MessageType = MessageType.LightSetInfrared
     payload: InfraredBrightnessPayload
 
     def get_payload(self) -> bytes:
@@ -624,7 +648,7 @@ class LightSetInfrared(Message):
 
 
 class GetHevCycle(Message):
-    message_type = MessageType.GetHevCycle
+    message_type: MessageType = MessageType.GetHevCycle
 
 
 class HevCyclePayload(BaseModel):
@@ -633,7 +657,7 @@ class HevCyclePayload(BaseModel):
 
 
 class SetHevCycle(Message):
-    message_type = MessageType.SetHevCycle
+    message_type: MessageType = MessageType.SetHevCycle
     payload: HevCyclePayload
 
     def get_payload(self) -> bytes:
@@ -649,7 +673,7 @@ class StateHevCyclePayload(BaseModel):
 
 
 class StateHevCycle(Message):
-    message_type = MessageType.StateHevCycle
+    message_type: MessageType = MessageType.StateHevCycle
     payload: StateHevCyclePayload
 
     def get_payload(self) -> bytes:
@@ -660,7 +684,7 @@ class StateHevCycle(Message):
 
 
 class GetHevCycleConfiguration(Message):
-    message_type = MessageType.GetHevCycleConfiguration
+    message_type: MessageType = MessageType.GetHevCycleConfiguration
 
 
 class HevCycleConfigurationPayload(BaseModel):
@@ -669,7 +693,7 @@ class HevCycleConfigurationPayload(BaseModel):
 
 
 class SetHevCycleConfiguration(Message):
-    message_type = MessageType.SetHevCycleConfiguration
+    message_type: MessageType = MessageType.SetHevCycleConfiguration
     payload: HevCycleConfigurationPayload
 
     def get_payload(self) -> bytes:
@@ -684,7 +708,7 @@ class StateHevCycleConfigurationPayload(Message):
 
 
 class StateHevCycleConfiguration(Message):
-    message_type = MessageType.StateHevCycleConfiguration
+    message_type: MessageType = MessageType.StateHevCycleConfiguration
     payload: StateHevCycleConfigurationPayload
 
     def get_payload(self) -> bytes:
@@ -694,7 +718,7 @@ class StateHevCycleConfiguration(Message):
 
 
 class GetLastHevCycleResult(Message):
-    message_type = MessageType.GetLastHevCycleResult
+    message_type: MessageType = MessageType.GetLastHevCycleResult
 
 
 class ResultPayload(BaseModel):
@@ -702,7 +726,7 @@ class ResultPayload(BaseModel):
 
 
 class StateLastHevCycleResult(Message):
-    message_type = MessageType.StateLastHevCycleResult
+    message_type: MessageType = MessageType.StateLastHevCycleResult
     payload: ResultPayload
 
     def get_payload(self) -> bytes:
@@ -723,7 +747,7 @@ class MultiZoneStateMultiZonePayload(BaseModel):
 
 
 class MultiZoneStateMultiZone(Message):
-    message_type = MessageType.MultiZoneStateMultiZone
+    message_type: MessageType = MessageType.MultiZoneStateMultiZone
     payload: MultiZoneStateMultiZonePayload
 
     def get_payload(self) -> bytes:
@@ -742,7 +766,7 @@ class MultiZoneStateZonePayload(BaseModel):
 
 
 class MultiZoneStateZone(Message):  # 503
-    message_type = MessageType.MultiZoneStateZone
+    message_type: MessageType = MessageType.MultiZoneStateZone
     payload: MultiZoneStateZonePayload
 
     def get_payload(self) -> bytes:
@@ -761,7 +785,7 @@ class MultiZoneSetColorZonesPayload(BaseModel):
 
 
 class MultiZoneSetColorZones(Message):
-    message_type = MessageType.MultiZoneSetColorZones
+    message_type: MessageType = MessageType.MultiZoneSetColorZones
     payload: MultiZoneSetColorZonesPayload
 
     def get_payload(self) -> bytes:
@@ -779,7 +803,7 @@ class MultiZoneGetColorZonesPayload(BaseModel):
 
 
 class MultiZoneGetColorZones(Message):
-    message_type = MessageType.MultiZoneGetColorZones
+    message_type: MessageType = MessageType.MultiZoneGetColorZones
     payload: MultiZoneGetColorZonesPayload
 
     def get_payload(self) -> bytes:
@@ -789,11 +813,11 @@ class MultiZoneGetColorZones(Message):
 
 
 class MultiZoneGetMultiZoneEffect(Message):
-    message_type = MessageType.MultiZoneGetMultiZoneEffect
+    message_type: MessageType = MessageType.MultiZoneGetMultiZoneEffect
 
 
 class MultiZoneSetMultiZoneEffectPayload(BaseModel):
-    instanceid = random.randrange(1, 1 << 32)
+    instanceid: int = randrange(1, 1 << 32)
     type: int
     speed: int
     duration: int
@@ -801,7 +825,7 @@ class MultiZoneSetMultiZoneEffectPayload(BaseModel):
 
 
 class MultiZoneSetMultiZoneEffect(Message):
-    message_type = MessageType.MultiZoneSetMultiZoneEffect
+    message_type: MessageType = MessageType.MultiZoneSetMultiZoneEffect
     payload: MultiZoneSetMultiZoneEffectPayload
 
     def get_payload(self) -> bytes:
@@ -816,7 +840,18 @@ class MultiZoneSetMultiZoneEffect(Message):
         direction = uint32_format(self.payload.direction)
         parameter3 = uint32_format(4)
 
-        return instanceid + type + reserved6 + speed + duration + reserved7 + reserved8 + parameter1 + direction + parameter3 * 6
+        return (
+            instanceid
+            + type
+            + reserved6
+            + speed
+            + duration
+            + reserved7
+            + reserved8
+            + parameter1
+            + direction
+            + parameter3 * 6
+        )
 
 
 class MultiZoneSetMultiZoneEffectPayload(BaseModel):
@@ -828,7 +863,7 @@ class MultiZoneSetMultiZoneEffectPayload(BaseModel):
 
 
 class MultiZoneStateMultiZoneEffect(Message):
-    message_type = MessageType.MultiZoneStateMultiZoneEffect
+    message_type: MessageType = MessageType.MultiZoneStateMultiZoneEffect
     payload: MultiZoneSetMultiZoneEffectPayload
 
     def get_payload(self) -> bytes:
@@ -838,11 +873,22 @@ class MultiZoneStateMultiZoneEffect(Message):
         duration = uint64_format(self.payload.duration)
         parameter1 = b"".join(uint8_format(8))
         direction = b"".join(uint8_format(c) for c in self.payload.direction)
-        direction_padding = b"".join(uint8_format(0) for i in range(8 - len(self.payload.direction)))
+        direction_padding = b"".join(
+            uint8_format(0) for i in range(8 - len(self.payload.direction))
+        )
         direction += direction_padding
         parameter3 = b"".join(uint8_format(8))
         parameter4 = b"".join(uint8_format(8))
-        return instanceid + effect + speed + duration + parameter1 + direction + parameter3 + parameter4
+        return (
+            instanceid
+            + effect
+            + speed
+            + duration
+            + parameter1
+            + direction
+            + parameter3
+            + parameter4
+        )
 
     @property
     def effect_str(self) -> str:
@@ -862,7 +908,7 @@ class MultiZoneSetExtendedColorZonesPayload(BaseModel):
 
 
 class MultiZoneSetExtendedColorZones(Message):
-    message_type = MessageType.MultiZoneSetExtendedColorZones
+    message_type: MessageType = MessageType.MultiZoneSetExtendedColorZones
     payload: MultiZoneSetExtendedColorZonesPayload
 
     def get_payload(self) -> bytes:
@@ -877,7 +923,7 @@ class MultiZoneSetExtendedColorZones(Message):
 
 
 class MultiZoneGetExtendedColorZones(Message):
-    message_type = MessageType.MultiZoneGetExtendedColorZones
+    message_type: MessageType = MessageType.MultiZoneGetExtendedColorZones
 
 
 class MultiZoneStateExtendedColorZonesPayload(BaseModel):
@@ -888,7 +934,7 @@ class MultiZoneStateExtendedColorZonesPayload(BaseModel):
 
 
 class MultiZoneStateExtendedColorZones(Message):
-    message_type = MessageType.MultiZoneStateExtendedColorZones
+    message_type: MessageType = MessageType.MultiZoneStateExtendedColorZones
     payload: MultiZoneStateExtendedColorZonesPayload
 
     def get_payload(self) -> bytes:
@@ -902,7 +948,7 @@ class MultiZoneStateExtendedColorZones(Message):
 
 
 class TileGetDeviceChain(Message):
-    message_type = MessageType.TileGetDeviceChain
+    message_type: MessageType = MessageType.TileGetDeviceChain
 
 
 class TileDevice(BaseModel):
@@ -927,7 +973,7 @@ class TileStateDeviceChainPayload(BaseModel):
 
 
 class TileStateDeviceChain(Message):
-    message_type = MessageType.TileStateDeviceChain
+    message_type: MessageType = MessageType.TileStateDeviceChain
     payload: TileStateDeviceChainPayload
 
     def get_payload(self) -> bytes:
@@ -948,7 +994,7 @@ class TileStateDeviceChain(Message):
                     uint64_format(tile_device.firmware_build),
                     uint16_format(tile_device.firmware_version_minor),
                     uint16_format(tile_device.firmware_version_major),
-                ],
+                ]
             )
         tile_devices_count = uint8_format(self.payload.tile_devices_count)
         return start_index + tile_devices + tile_devices_count
@@ -963,7 +1009,7 @@ class TileGet64Payload(BaseModel):
 
 
 class TileGet64(Message):
-    message_type = MessageType.TileGet64
+    message_type: MessageType = MessageType.TileGet64
     payload: TileGet64Payload
 
     def get_payload(self) -> bytes:
@@ -982,7 +1028,7 @@ class TileSet64Payload(TileGet64Payload):
 
 
 class TileSet64(Message):
-    message_type = MessageType.TileSet64
+    message_type: MessageType = MessageType.TileSet64
     payload: TileSet64Payload
 
     def get_payload(self) -> bytes:
@@ -1008,7 +1054,7 @@ class TileState64Payload(BaseModel):
 
 
 class TileState64(Message):
-    message_type = MessageType.TileState64
+    message_type: MessageType = MessageType.TileState64
     payload: TileState64Payload
 
     def get_payload(self) -> bytes:
@@ -1024,11 +1070,11 @@ class TileState64(Message):
 
 
 class TileGetTileEffect(Message):
-    message_type = MessageType.TileGetTileEffect
+    message_type: MessageType = MessageType.TileGetTileEffect
 
 
 class TileSetTileEffectPayload(BaseModel):
-    instanceid = random.randrange(1, 1 << 32)
+    instanceid: int = randrange(1, 1 << 32)
     type: int
     speed: int
     duration: int
@@ -1040,7 +1086,7 @@ class TileSetTileEffectPayload(BaseModel):
 
 
 class TileSetTileEffect(Message):
-    message_type = MessageType.TileSetTileEffect
+    message_type: MessageType = MessageType.TileSetTileEffect
     payload: TileSetTileEffectPayload
 
     def get_payload(self) -> bytes:
@@ -1054,7 +1100,19 @@ class TileSetTileEffect(Message):
         cloud_saturation_max = uint8_format(self.payload.cloud_saturation_max)
         palette_count = uint8_format(self.payload.palette_count)
         payload = (
-            reserved * 2 + instanceid + type + speed + duration + reserved * 8 + sky_type + reserved * 3 + cloud_saturation_min + reserved * 3 + cloud_saturation_max + reserved * 23 + palette_count
+            reserved * 2
+            + instanceid
+            + type
+            + speed
+            + duration
+            + reserved * 8
+            + sky_type
+            + reserved * 3
+            + cloud_saturation_min
+            + reserved * 3
+            + cloud_saturation_max
+            + reserved * 23
+            + palette_count
         )
         for color in self.payload.palette:
             payload += b"".join(uint16_format(field) for field in color)
@@ -1075,7 +1133,7 @@ class TileStateTileEffectPayload(BaseModel):
 
 
 class TileStateTileEffect(Message):
-    message_type = MessageType.TileStateTileEffect
+    message_type: MessageType = MessageType.TileStateTileEffect
     payload: TileStateTileEffectPayload
 
     def get_payload(self) -> bytes:
@@ -1087,7 +1145,16 @@ class TileStateTileEffect(Message):
         cloud_saturation_min = uint8_format(self.payload.cloud_saturation_min)
         cloud_saturation_max = uint8_format(self.payload.cloud_saturation_max)
         palette_count = uint8_format(self.payload.palette_count)
-        payload = instanceid + effect + speed + duration + sky_type + cloud_saturation_min + cloud_saturation_max + palette_count
+        payload = (
+            instanceid
+            + effect
+            + speed
+            + duration
+            + sky_type
+            + cloud_saturation_min
+            + cloud_saturation_max
+            + palette_count
+        )
         for color in self.payload.palette:
             payload += b"".join(uint16_format(field) for field in color)
 
@@ -1113,7 +1180,7 @@ class RelayPowerPayload(BaseModel):
 
 
 class GetRPower(Message):
-    message_type = MessageType.GetRPower
+    message_type: MessageType = MessageType.GetRPower
     payload: RelayPowerPayload
 
     def get_payload(self) -> bytes:
@@ -1125,7 +1192,7 @@ class SetRelayPowerPayload(RelayPowerPayload):
 
 
 class SetRPower(Message):
-    message_type = MessageType.SetRPower
+    message_type: MessageType = MessageType.SetRPower
     payload: SetRelayPowerPayload
 
     def get_payload(self) -> bytes:
@@ -1140,7 +1207,7 @@ class StateRelayPowerPayload(BaseModel):
 
 
 class StateRPower(Message):
-    message_type = MessageType.StateRPower
+    message_type: MessageType = MessageType.StateRPower
     payload: StateRelayPowerPayload
 
     def get_payload(self) -> bytes:
@@ -1154,14 +1221,14 @@ class StateRPower(Message):
 
 
 class GetButton(Message):
-    message_type = MessageType.GetButton
+    message_type: MessageType = MessageType.GetButton
 
 
 class SetButtonPayload(BaseModel): ...
 
 
 class SetButton(Message):
-    message_type = MessageType.SetButton
+    message_type: MessageType = MessageType.SetButton
     payload: SetButtonPayload
 
     def get_payload(self) -> bytes:
@@ -1177,46 +1244,50 @@ class StateButtonPayload(BaseModel):
 
 
 class StateButton(Message):
-    message_type = MessageType.StateButton
+    message_type: MessageType = MessageType.StateButton
     payload: StateButtonPayload
 
 
 class GetButtonConfig(Message):
-    message_type = MessageType.GetButtonConfig
+    message_type: MessageType = MessageType.GetButtonConfig
+
+
+class BacklightColor(BaseModel):
+    hue: int
+    saturation: int
+    brightness: int
+    kelvin: int
 
 
 class SetButtonConfigPayload(BaseModel):
     haptic_duration_ms: int
-    backlight_on_color: int
-    backlight_off_color: int
+    backlight_on_color: BacklightColor
+    backlight_off_color: BacklightColor
 
 
 class SetButtonConfig(Message):
-    message_type = MessageType.SetButtonConfig
+    message_type: MessageType = MessageType.SetButtonConfig
     payload: SetButtonConfigPayload
 
     def get_payload(self) -> bytes:
         haptic_duration_ms = uint16_format(self.payload.haptic_duration_ms)
-
-        hue = self.payload.backlight_on_color["hue"]
-        saturation = self.payload.backlight_on_color["saturation"]
-        brightness = self.payload.backlight_on_color["brightness"]
-        kelvin = self.payload.backlight_on_color["kelvin"]
-
-        backlight_on_color = uint16_format(hue) + uint16_format(saturation) + uint16_format(brightness) + uint16_format(kelvin)
-
-        hue = self.payload.backlight_off_color["hue"]
-        saturation = self.payload.backlight_off_color["saturation"]
-        brightness = self.payload.backlight_off_color["brightness"]
-        kelvin = self.payload.backlight_off_color["kelvin"]
-
-        backlight_off_color = uint16_format(hue) + uint16_format(saturation) + uint16_format(brightness) + uint16_format(kelvin)
-
+        backlight_on_color = (
+            uint16_format(self.payload.backlight_on_color.hue)
+            + uint16_format(self.payload.backlight_on_color.saturation)
+            + uint16_format(self.payload.backlight_on_color.brightness)
+            + uint16_format(self.payload.backlight_on_color.kelvin)
+        )
+        backlight_off_color = (
+            uint16_format(self.payload.backlight_off_color.hue)
+            + uint16_format(self.payload.backlight_off_color.saturation)
+            + uint16_format(self.payload.backlight_off_color.brightness)
+            + uint16_format(self.payload.backlight_off_color.kelvin)
+        )
         return haptic_duration_ms + backlight_on_color + backlight_off_color
 
 
 class StateButtonConfig(Message):
-    message_type = MessageType.StateButtonConfig
+    message_type: MessageType = MessageType.StateButtonConfig
 
 
 SERVICE_IDS = {1: "UDP", 2: "reserved", 3: "reserved", 4: "reserved"}
@@ -1225,9 +1296,24 @@ STR_MAP = {65535: "On", 0: "Off", None: "Unknown"}
 
 ZONE_MAP = {0: "NO_APPLY", 1: "APPLY", 2: "APPLY_ONLY"}
 
-LAST_HEV_CYCLE_RESULT = {0: "SUCCESS", 1: "BUSY", 2: "INTERRUPTED_BY_RESET", 3: "INTERRUPTED_BY_HOMEKIT", 4: "INTERRUPTED_BY_LAN", 5: "INTERRUPTED_BY_CLOUD", 255: "NONE"}
+LAST_HEV_CYCLE_RESULT = {
+    0: "SUCCESS",
+    1: "BUSY",
+    2: "INTERRUPTED_BY_RESET",
+    3: "INTERRUPTED_BY_HOMEKIT",
+    4: "INTERRUPTED_BY_LAN",
+    5: "INTERRUPTED_BY_CLOUD",
+    255: "NONE",
+}
 
-TILE_EFFECT_SKY_PALETTE = {0: "SKY", 1: "NIGHT_SKY", 2: "DAWN_SKY", 3: "DAWN_SUN", 4: "FULL_SUN", 5: "FINAL_SUN"}
+TILE_EFFECT_SKY_PALETTE = {
+    0: "SKY",
+    1: "NIGHT_SKY",
+    2: "DAWN_SKY",
+    3: "DAWN_SUN",
+    4: "FULL_SUN",
+    5: "FINAL_SUN",
+}
 
 
 class Button:
@@ -1275,4 +1361,79 @@ class ButtonAction:
         return payload
 
 
-MessageTypes = {MessageType.GetService: GetService}
+MessageTypes = {
+    MessageType.GetService: GetService,
+    MessageType.StateService: StateService,
+    MessageType.GetHostInfo: GetHostInfo,
+    MessageType.StateHostInfo: StateHostInfo,
+    MessageType.GetHostFirmware: GetHostFirmware,
+    MessageType.StateHostFirmware: StateHostFirmware,
+    MessageType.GetWifiInfo: GetWifiInfo,
+    MessageType.StateWifiInfo: StateWifiInfo,
+    MessageType.GetWifiFirmware: GetWifiFirmware,
+    MessageType.StateWifiFirmware: StateWifiFirmware,
+    MessageType.GetPower: GetPower,
+    MessageType.SetPower: SetPower,
+    MessageType.StatePower: StatePower,
+    MessageType.GetLabel: GetLabel,
+    MessageType.SetLabel: SetLabel,
+    MessageType.StateLabel: StateLabel,
+    MessageType.GetVersion: GetVersion,
+    MessageType.StateVersion: StateVersion,
+    MessageType.GetInfo: GetInfo,
+    MessageType.StateInfo: StateInfo,
+    MessageType.GetLocation: GetLocation,
+    MessageType.StateLocation: StateLocation,
+    MessageType.GetGroup: GetGroup,
+    MessageType.StateGroup: StateGroup,
+    MessageType.SetReboot: SetReboot,
+    MessageType.Acknowledgement: Acknowledgement,
+    MessageType.EchoRequest: EchoRequest,
+    MessageType.EchoResponse: EchoResponse,
+    MessageType.LightGet: LightGet,
+    MessageType.LightSetColor: LightSetColor,
+    MessageType.LightSetWaveform: LightSetWaveform,
+    MessageType.LightSetWaveformOptional: LightSetWaveformOptional,
+    MessageType.LightState: LightState,
+    MessageType.LightGetPower: LightGetPower,
+    MessageType.LightSetPower: LightSetPower,
+    MessageType.LightStatePower: LightStatePower,
+    MessageType.LightGetInfrared: LightGetInfrared,
+    MessageType.LightStateInfrared: LightStateInfrared,
+    MessageType.LightSetInfrared: LightSetInfrared,
+    MessageType.GetHevCycle: GetHevCycle,
+    MessageType.SetHevCycle: SetHevCycle,
+    MessageType.StateHevCycle: StateHevCycle,
+    MessageType.GetHevCycleConfiguration: GetHevCycleConfiguration,
+    MessageType.SetHevCycleConfiguration: SetHevCycleConfiguration,
+    MessageType.StateHevCycleConfiguration: StateHevCycleConfiguration,
+    MessageType.GetLastHevCycleResult: GetLastHevCycleResult,
+    MessageType.StateLastHevCycleResult: StateLastHevCycleResult,
+    MessageType.MultiZoneStateMultiZone: MultiZoneStateMultiZone,
+    MessageType.MultiZoneStateZone: MultiZoneStateZone,
+    MessageType.MultiZoneSetColorZones: MultiZoneSetColorZones,
+    MessageType.MultiZoneGetColorZones: MultiZoneGetColorZones,
+    MessageType.MultiZoneGetMultiZoneEffect: MultiZoneGetMultiZoneEffect,
+    MessageType.MultiZoneSetMultiZoneEffect: MultiZoneSetMultiZoneEffect,
+    MessageType.MultiZoneStateMultiZoneEffect: MultiZoneStateMultiZoneEffect,
+    MessageType.MultiZoneSetExtendedColorZones: MultiZoneSetExtendedColorZones,
+    MessageType.MultiZoneGetExtendedColorZones: MultiZoneGetExtendedColorZones,
+    MessageType.MultiZoneStateExtendedColorZones: MultiZoneStateExtendedColorZones,
+    MessageType.TileGetDeviceChain: TileGetDeviceChain,
+    MessageType.TileStateDeviceChain: TileStateDeviceChain,
+    MessageType.TileGet64: TileGet64,
+    MessageType.TileSet64: TileSet64,
+    MessageType.TileState64: TileState64,
+    MessageType.TileGetTileEffect: TileGetTileEffect,
+    MessageType.TileSetTileEffect: TileSetTileEffect,
+    MessageType.TileStateTileEffect: TileStateTileEffect,
+    MessageType.GetRPower: GetRPower,
+    MessageType.SetRPower: SetRPower,
+    MessageType.StateRPower: StateRPower,
+    MessageType.GetButton: GetButton,
+    MessageType.SetButton: SetButton,
+    MessageType.StateButton: StateButton,
+    MessageType.GetButtonConfig: GetButtonConfig,
+    MessageType.SetButtonConfig: SetButtonConfig,
+    MessageType.StateButtonConfig: StateButtonConfig,
+}
